@@ -1,4 +1,5 @@
 from django.db import models
+from django.dispatch import receiver
 
 from members.apps import MembersConfig
 
@@ -9,3 +10,4 @@ class NormalUserProfile(models.Model):
 
     class Meta:
         db_table = MembersConfig.name + '_normal_user_profile'
+

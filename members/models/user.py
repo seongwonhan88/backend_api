@@ -29,3 +29,14 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_full_name(self):
         return f'{self.first_name}_{self.last_name}'
+
+
+class TempUser(AbstractBaseUser):
+    email = models.EmailField('email address', unique=True)
+    is_active = models.BooleanField(default=False)
+    date_activated = models.DateTimeField(null=True, blank=True)
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=150)
+
+    class Meta:
+        db_table = MembersConfig.name + '_temp_user'
