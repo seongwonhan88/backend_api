@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'members',
     'scripts',
+    'celery',
+
 ]
 
 MIDDLEWARE = [
@@ -135,3 +137,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# REDIS
+REDIS_HOST = host=os.getenv('REDIS_HOST', 'localhost')
+REDIS_PORT = os.getenv('REDIS_PORT', '6379')
+REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}"
+
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
