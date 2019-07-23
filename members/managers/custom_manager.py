@@ -34,6 +34,6 @@ class CustomUserManager(BaseUserManager):
 def generate_activation_link(user):
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = account_activation_token.make_token(user)
-    activation_link = LOCAL_URL + f'{uid}/{token}'
+    activation_link = str(LOCAL_URL) + f'{uid}/{token}'
     print(activation_link)
     return activation_link
