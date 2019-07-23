@@ -3,9 +3,12 @@ import uuid
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from members.apps import MembersConfig
 from members.managers.custom_manager import CustomUserManager
+from members.tasks import dispatch_mail
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -16,7 +19,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField('date joined', auto_now_add=True)
 
     is_staff = models.BooleanField('staff status', default=False)
-    is_active = models.BooleanField('active', default=True)
+    is_active = models.BooleanField('active', default=False)  # gets activated after confimation
 
     USERNAME_FIELD = 'email'
     objects = CustomUserManager()
@@ -29,6 +32,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_full_name(self):
         return f'{self.first_name}_{self.last_name}'
+
+
+# @receiver(post_save, sender=User)
+# def send_verification(sender, instance, created, **kwargs):
+#     if created:
+#         # dispatch_mail.delay(instance)
 
 
 class TempUser(AbstractBaseUser):

@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from members.seiralizers.user import UserSerializer, UserSerializerWithToken
+from members.tasks import dispatch_mail
 
 
 @api_view(['GET'])
@@ -19,5 +20,6 @@ class UserList(APIView):
         serializer = UserSerializerWithToken(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            # dispatch_mail.delay(serializer.instance)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
