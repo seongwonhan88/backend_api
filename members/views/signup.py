@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from members.exceptions import UserAlreadyActive
+from members.exceptions import UserAlreadyActive, EmailNotFound
 from members.seiralizers.user import UserSerializer, UserSerializerWithToken
 from members.tasks import dispatch_mail
 from members.token import account_activation_token
@@ -52,7 +52,13 @@ class EmailActivationView(generics.GenericAPIView):
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
 def reactivation_request(request):
-    if request.user.is_active:
+    try:
+        email = request.data.get('email', None)
+        print(email)
+        user = get_user_model().objects.get(email=email)
+    except get_user_model().DoesNotExist:
+        raise EmailNotFound
+    if user.is_active:
         raise UserAlreadyActive
-    dispatch_mail(request.user.pk)
-    return Response({'message': [f'Verification email is sent to {request.user.email}']})
+    dispatch_mail.delay(user.pk)
+    return Response({'message': [f'Verification email is sent to {user.email}']})
