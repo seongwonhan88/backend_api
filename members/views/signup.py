@@ -3,10 +3,11 @@ from django.utils import timezone
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from rest_framework import status, permissions, generics
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from members.exceptions import UserAlreadyActive
 from members.seiralizers.user import UserSerializer, UserSerializerWithToken
 from members.tasks import dispatch_mail
 from members.token import account_activation_token
@@ -46,3 +47,12 @@ class EmailActivationView(generics.GenericAPIView):
                 return Response({"email": user.email}, status=status.HTTP_202_ACCEPTED)
         except(TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
             return Response({"error": ["Link Activation is Invalid"]}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes((permissions.AllowAny,))
+def reactivation_request(request):
+    if request.user.is_active:
+        raise UserAlreadyActive
+    dispatch_mail(request.user.pk)
+    return Response({'message': [f'Verification email is sent to {request.user.email}']})
