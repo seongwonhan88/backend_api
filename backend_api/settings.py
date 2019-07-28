@@ -14,7 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # from members.models import User
-
+from celery.schedules import crontab
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -170,5 +170,13 @@ CACHES = {
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient'
         }
+    }
+}
+
+CELERY_BEAT_SCHEDULE = {
+    'send-reminder-to-unverified-users-every-day': {
+        'task': 'remind_to_verify_account',
+        # 'schedule': crontab(minute=0, hour=0)
+        'schedule': 60.0
     }
 }

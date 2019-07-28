@@ -1,3 +1,5 @@
+from datetime import timedelta, datetime
+
 from django.contrib.auth import get_user_model
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -23,3 +25,11 @@ def dispatch_mail(user_pk):
     message = EmailMultiAlternatives(title, text_content, SENDER, [user.email])
     message.attach_alternative(html_content, "text/html")
     message.send()
+
+
+@app.task(name='remind_to_verify_account')
+def dispatch_reminder():
+    members = get_user_model().objects.filter(is_active=False)
+    for member in members:
+        if member.date_joined + timedelta(days=7) == datetime.utcnow().date():
+            dispatch_mail.apply_async(args=[member.pk])
