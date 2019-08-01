@@ -23,7 +23,7 @@
 Icon
 
 # deploy docker-compose
-docker-compose.yml
+#docker-compose.yml
 
 # Thumbnails
 ._*
