@@ -12,3 +12,16 @@ services:
       - "8000:8000"
     depends_on:
       - db
+  redis:
+    image: redis:5.0.3
+    container_name: redis6001
+    hostname: redis6001
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    network_mode: host
+    ports:
+      - 6001:6001
+    volumes:
+      - /root/docker/redis-5.0.3/6001:/data
+    command: redis-server /data/redis.conf
