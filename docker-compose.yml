@@ -12,13 +12,15 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6001
+    links:
+      - redis
   redis:
     image: redis
-    container_name: redis6001
-    hostname: redis6001
-    labels:
-      - "name=redis"
-      - "mode=standalone"
-    network_mode: host
     ports:
-      - 6001:6001
+      - "6001:6001"
+    expose:
+      - "6001"
