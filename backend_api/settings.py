@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'members',
     'scripts',
     'celery',
-
 ]
 
 MIDDLEWARE = [
